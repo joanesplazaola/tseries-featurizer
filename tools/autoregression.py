@@ -1,10 +1,16 @@
-from statsmodels.tsa.arima_model import ARIMA, ARMA
+from statsmodels.tsa.arima_model import ARIMA
 import numpy as np
 from tools import get_possible_orders
 import pandas as pd
 
 
 def get_orders_aic(order, data):
+	"""
+
+	:param order:
+	:param data:
+	:return:
+	"""
 	aic = float('inf')
 	arima_mod_params = None
 	try:
@@ -17,6 +23,13 @@ def get_orders_aic(order, data):
 
 
 def get_generic_AR(data, max_coeffs, all_data):
+	"""
+
+	:param data:
+	:param max_coeffs:
+	:param all_data:
+	:return:
+	"""
 	# model, orders = get_model_and_possible_orders(model, max_coeffs, )
 	param_list = list()
 

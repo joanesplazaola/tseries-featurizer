@@ -8,7 +8,8 @@ __version__ = "1.0.5"
 __license__ = "MIT"
 
 
-def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, valley=False, show=False, ax=None):
+def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, valley=False, show=False, ax=None,
+				 test=False, fit_model=None):
 	"""Detect peaks in data based on their amplitude and other features.
 
 	Parameters
@@ -89,6 +90,10 @@ def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, val
 		The sign of `mph` is inverted if parameter `valley` is True
 
 	"""
+	if test:
+		ret = [(i, round(x.iloc[i], 3)) for i in fit_model]
+		return ret
+
 	if mph is None:
 		mph = np.percentile(x, 99)
 	x = np.atleast_1d(x).astype('float64')

@@ -1,8 +1,11 @@
 from numpy.fft import fft
-import pywt
+import pandas as pd
 
 
 def to_frequency(data):
+	if isinstance(data, pd.Series):
+		data = data.to_frame()
+
 	freq_data = abs(data.apply(fft))
 	half_size = freq_data.shape[0] / 2
 	freq_data = freq_data[:int(half_size)]
@@ -10,6 +13,7 @@ def to_frequency(data):
 
 
 def wavelet_transform(data, wavelet):
+	import pywt
 	# Discrete Wavelet Transform
 	ard, a = pywt.dwt(data, wavelet)
 	# plt.plot(ard)
@@ -18,4 +22,5 @@ def wavelet_transform(data, wavelet):
 
 
 def inverse_wavelet_transform(appr_coeff, detail_coeff, wavelet):
+	import pywt
 	return pywt.idwt(appr_coeff, detail_coeff, wavelet)  # Returns approximation and detail coefficients

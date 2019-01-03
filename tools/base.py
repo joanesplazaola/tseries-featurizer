@@ -4,30 +4,39 @@ from .helpers import get_attr_from_module, parallel_process
 
 class BaseFeaturizer:
 
-	def __init__(self, data, time_config=None):
+	def __init__(self, data, config=None):
 		self._data = data.copy()
-		self._config = time_config
-
+		self._config = config
 		self.apply_previous_trans()
 
 	def apply_previous_trans(self):
-		transf_funcs = self._config['previous_trans']
+		"""
+
+		:return:
+		"""
+		transf_funcs = self._config.prev_trans
 
 		for function_name in transf_funcs.keys():
 			func = get_attr_from_module(function_name)
-			args = transf_funcs[function_name].get('args', [])
-			kwargs = transf_funcs[function_name].get('kwargs', {})
+			args = transf_funcs[function_name].args
+			kwargs = transf_funcs[function_name].kwargs
 			self._data = func(self._data, *args, **kwargs)
 
 	# TODO Ahal dan heinian hau aggr-ekin jarri biharko litzake. Holako zerbait, baina argumentuak gehituta
 	#  t_list = self._data.agg(self._config.keys(), axis=1).T
 	#
 	def featurize(self, use_dask, n_jobs=1):
+		"""
+
+		:param use_dask:
+		:param n_jobs:
+		:return:
+		"""
 
 		kwargs = [
-			{'key': key, 'exec': execs}
-			for key in self._config['features']
-			for execs in self._config['features'][key]
+			{'key': key.name, 'exec': execs}
+			for index, key in enumerate(self._config.feature_confs)
+			for execs in self._config.feature_confs[index].executions
 		]
 		ret = parallel_process(kwargs, self._apply_featurization, n_jobs=n_jobs, use_kwargs=True)
 
@@ -38,13 +47,18 @@ class BaseFeaturizer:
 		return df, self._data  # The transformed dataframe and the previous transformations dataframe are returned
 
 	def _apply_featurization(self, key, exec):
+		"""
+
+		:param key:
+		:param exec:
+		:return:
+		"""
 
 		func = get_attr_from_module(key)
 
-		args = tuple(exec.get('args', []))
-		kwargs = exec.get('kwargs', {})
-		if exec.get('send_all_data', False):
+		args = tuple(exec.args)
+		kwargs = exec.kwargs
+		if exec.send_all_data:
 			kwargs['all_data'] = self._data
 		trans = self._data.apply(func, args=args, **kwargs)
-		str_args = ",".join(map(str, args))  # TODO Hemen kwarg-ekin zerbaitt eittia ondo legoke
-		return trans, f'{func.__name__}{ str_args}'
+		return trans, str(exec)
