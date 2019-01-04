@@ -105,7 +105,7 @@ class PreprocessorTest(unittest.TestCase):
 	def test_get_frequencies_one(self):
 		import pandas as pd
 		data = [[(555, 111), (555, 111), (555, 111), (555, 111), (555, 111)], ]
-		expected = [555] * len(data)
+		expected = [555] * len(data[0])
 		df = pd.Series(data)
-		output = item_list_from_tuple_list(df)
+		output = item_list_from_tuple_list(df, sort=False)
 		self.assertListEqual(sorted(expected), sorted(output))
