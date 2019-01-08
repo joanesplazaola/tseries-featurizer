@@ -43,10 +43,9 @@ default_conf = {
 		},
 		'features': {
 			'tools.detect_peaks': [
-				{'kwargs': {'show': False}, 'test': {
+				{'kwargs': {'show': False, }, 'complete_gaps': True, 'test': {
 					'preprocessors': {
-						'tools.item_list_from_tuple_list':
-							{'item_index': 0, 'unique': True, 'sort': True, 'output_type': int}  # Keyword arguments
+						'tools.get_list_from_columns': {}  # Keyword arguments
 					},  # TODO OrderedDict??
 				}}
 
@@ -55,8 +54,7 @@ default_conf = {
 
 		},
 
-	}
-	# Each keyword of
+	},
 
 	# 'Wavelet': {
 	# 	'class': 'tools.featurizers.WaveletFeaturizer',
@@ -69,18 +67,26 @@ default_conf = {
 	# 	},
 	# 	'apply_model_to_test': [],
 	# },
-	# 'AR': {
-	# 	'class': 'tools.featurizers.AutoRegressionFeaturizer',
-	# 	'previous_trans': {},
-	# 	'features': {
-	#
-	# 		'tools.get_generic_AR': [
-	# 			{'send_all_data': True, 'kwargs': {'max_coeffs': 3, }},
-	#
-	# 		],
-	#
-	# 	},
-	# 	'apply_model_to_test': [],
-	# },
+	'AR': {
+		'class': 'tools.featurizers.AutoRegressionFeaturizer',
+		'previous_trans': {},
+		'features': {
+
+			'tools.get_generic_AR': [
+				{'send_all_data': True, 'kwargs': {'max_coeffs': 3, }, 'test': {
+					'preprocessors': {
+						'tools.get_evaluated_function': {
+							'evaluated_field': 'score',
+							'evaluator_fn': 'numpy.argmin',
+							'model_field': 'best_order'
+
+						}  # Keyword arguments
+					},  # TODO OrderedDict?? Azken finian aurreprozesaketa egiterako orduan inportantia da ordena
+				}},
+
+			],
+
+		},
+	},
 
 }

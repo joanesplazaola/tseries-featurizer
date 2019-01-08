@@ -3,6 +3,9 @@ from tseries import TimeSeriesFeaturizer
 import numpy as np
 import datetime
 
+# Hilbert analytical signal's fft
+
+
 N = 3000
 
 signal = np.sin(50 * np.pi * np.arange(N) / float(N / 2)) * 21
@@ -28,5 +31,8 @@ data = pd.DataFrame(d)
 
 tseries = TimeSeriesFeaturizer()
 
-tranformed = tseries.featurize(data, time_column='time', n_jobs=16)
-print(tranformed)
+transformed = tseries.featurize(data, time_column='time', n_jobs=16)
+test_features = tseries.test_featurization(data)
+
+print(test_features.columns.shape)
+print(transformed.columns.shape)

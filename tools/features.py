@@ -2,6 +2,7 @@
 
 from __future__ import division, print_function
 import numpy as np
+import pandas as pd
 
 __author__ = "Marcos Duarte, https://github.com/demotu/BMC"
 __version__ = "1.0.5"
@@ -91,11 +92,12 @@ def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, val
 
 	"""
 	if test:
-		ret = [(i, round(x.iloc[i], 3)) for i in fit_model]
+		ret = {i: round(x[i], 3) for i in fit_model}
+
 		return ret
 
 	if mph is None:
-		mph = np.percentile(x, 99)
+		mph = np.percentile(x, 95)
 	x = np.atleast_1d(x).astype('float64')
 	if x.size < 3:
 		return np.array([], dtype=int)
@@ -157,7 +159,7 @@ def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, val
 				mph = -mph
 		_plot(x, mph, mpd, threshold, edge, valley, ax, ind)
 
-	ret = [(i, round(x[i], 3)) for i in ind]
+	ret = {i: round(x[i], 3) for i in ind}
 	return ret
 
 
@@ -195,4 +197,9 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
 
 
 def signal_energy(data):
+	"""
+	Calculates the energy of a signal.
+	:param data: the signal
+	:return: energy
+	"""
 	return (data.values ** 2).sum(axis=0)

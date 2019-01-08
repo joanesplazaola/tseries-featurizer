@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from config import default_conf
 from tools import get_attr_from_module, parallel_process, config_dict_validation
+import copy
 
 
 class TimeSeriesFeaturizer:
@@ -37,31 +38,47 @@ class TimeSeriesFeaturizer:
 	"""
 
 	def __init__(self, config=default_conf, ):
-		self._config = config
+		self._config = copy.deepcopy(config)
 		self._featurized_data = pd.DataFrame()
 		self._testing_data = pd.DataFrame()
+		self._prev_trans = dict()
 
-		self._prev_trans = dict()  # Here previous transformations will be stored with its key
-
-	# TODO NaNekin ze egin.. Dena ondo dagoela begiratu
-	# check if data is dataframe or series
-	def _check_dataset(self, data, time_column, ):
+	@staticmethod
+	def _check_dataset(data, time_column, ):
 		"""
+		Dataset validation is performed in this function, checking NaNs, data type, index's validity...
 
-		:param data:
-		:param time_column:
-		:return:
+
+		:param data: dataFrame to be validated.
+		:param time_column: Date column of the DataFrame.
+		:return: validated data, with some changes in index, etc.
 		"""
+		if not isinstance(data, pd.DataFrame):
+			raise TypeError('Data must be a pandas DataFrame.')
 
 		if data.isna().sum().sum() > 0:
 			raise Exception('NaNs have been found in the data.')
 		if not time_column:
 			if not data.index.is_all_dates:
-				raise Exception('No time column was specified, and DataFrame\'s index values are not dates.')
-			print('Index was used as the time reference column.')
+				try:
+					date_typed = pd.to_datetime(data.index.values, unit='s')
+					data.set_index(date_typed, inplace=True)
+
+				# TODO Honi verbosity nibel bat jarri bihar jako
+				#  print('Index was used as the time reference column.')
+
+				except Exception as e:
+					raise Exception('No time column was specified, and DataFrame\'s index values are not dates.')
+
 		else:
-			if time_column not in data.select_dtypes(include=[np.datetime64]).columns:
-				raise Exception('Specified time column is not of datetime type.')
+
+			if time_column not in data.select_dtypes(include=[np.datetime64, ]).columns:
+				try:
+					data[time_column] = pd.to_datetime(data[time_column], unit='s')
+					print('Time column was converted from numeric to date type.')
+
+				except Exception as e:
+					raise Exception('Specified time column is not of datetime type.')
 
 			data.set_index(time_column, inplace=True)
 
@@ -71,17 +88,55 @@ class TimeSeriesFeaturizer:
 
 		return data
 
-	def featurize(self, train, time_column=None, use_dask=False, n_jobs=1):
+	@staticmethod
+	def _featurize_each_class(data, config, use_dask, n_jobs):
 		"""
 
-		:param train:
-		:param time_column:
-		:param use_dask:
-		:param n_jobs:
+		Creates an instance of the class specified in the configuration, and calls its featurize function.
+		This class must inherit the BaseFeaturizer class.
+
+		For example:
+
+		featurizer = TimeFeaturizer(data, config)
+		featurizer.featurize()
+
+
+		:param data: The data to featurize.
+		:param config: The configuration for the featurization, with all the functions to apply.
+		:param use_dask: Specifies if the library for parallel computing is used. (Not implemented)
+		:param n_jobs: Specifies the number of cores used for the parallelization.
 		:return:
+
+		"""
+		featurizer = config.class_(data, config)
+		transf, prev_transf = featurizer.featurize(use_dask, n_jobs)
+
+		return transf, (config.class_, prev_transf)
+
+	def featurize(self, train, time_column=None, use_dask=False, n_jobs=1):
+		"""
+		Main function, comparable to fit in sklearn, data and configuration is validated, and with each class
+		specified in the configuration, featurization is completed.
+
+		Firstly, prepares the configuration, separating each featurizer in a dictionary with the specified settings.
+
+		Each featurizer contains the previous transformations to apply to the data, the features to extract
+		(with function name, args, kwargs, etc.) and some more settings.
+
+		After the configuration is set, the parallel_process function is called, where _featurize_each_class function
+		will be parallelly called with the specified configuration and n_jobs.
+
+		This returns a list of tuples, with the previous transformation and the featurized data,
+		and finally these are stored in their own class attributes.
+
+		:param train: dataFrame used for the training. Featurization is applied to this data.
+		:param time_column: The date column in order the time series to be ordered properly.
+		:param use_dask: Specifies if the library for parallel computing is used. (Not implemented)
+		:param n_jobs: Specifies the number of cores used for the parallelization.
+		:return: featurized DataFrame.
 		"""
 		data = self._check_dataset(train, time_column, )
-		errors, self._config = config_dict_validation(self._config)
+		self._config, errors = config_dict_validation(self._config)
 
 		if len(errors) > 0:
 			self.config_errors = errors
@@ -104,24 +159,28 @@ class TimeSeriesFeaturizer:
 
 		return self._featurized_data
 
-	def test_features(self, test, time_column=None, use_dask=False, n_jobs=1):
+	def test_featurization(self, test, time_column=None, use_dask=False, n_jobs=1):
 		"""
+		This function takes the previously (in featurize function) featurized dataset's model, and applies to a new dataset.
 
-		:param test:
-		:param time_column:
-		:param use_dask:
-		:param n_jobs:
+		:param test: dataFrame used for the testing. Featurization and the model is applied to this data.
+		:param time_column: The date column in order the time series to be ordered properly.
+		:param use_dask: Specifies if the library for parallel computing is used. (Not implemented)
+		:param n_jobs: Specifies the number of cores used for the parallelization.
 		:return:
 		"""
 
 		test = self._check_dataset(test, time_column, )
 		transf_list = list()
 		prev_trans_list = dict()
+		f_data = self._featurized_data
 
 		for featurizer in self._config:
 			test_executions = featurizer.get_test_features()
 			for execution in test_executions:
-				ret = self._featurized_data[featurizer.name][str(execution)]
+
+				ret = f_data[featurizer.name].loc[:, f_data[featurizer.name].columns.str.startswith(str(execution))]
+
 				for preprocessor, kwargs in execution.test['preprocessors'].items():
 					func = get_attr_from_module(preprocessor)
 					ret = func(ret, **kwargs)
@@ -136,30 +195,17 @@ class TimeSeriesFeaturizer:
 		self._testing_data = pd.concat(transf_list, axis=1, keys=keys)
 		return self._testing_data
 
-	def _featurize_each_class(self, data, config, use_dask, n_jobs):
-		"""
-
-		:param key:
-		:param data:
-		:param use_dask:
-		:param n_jobs:
-		:return:
-		"""
-		featurizer = config.class_(data, config)
-		transf, prev_transf = featurizer.featurize(use_dask, n_jobs)
-
-		return transf, (config.class_, prev_transf)
-
 	def get_previous_trans(self):
 		"""
+		Getter function for the transformations completed before the featurizations.
 
-		:return:
+		:return: The transformed data created for featurization on each featurizer.
 		"""
 		return self._prev_trans
 
 	def get_featurized_data(self):
 		"""
-
+		Getter function for featurized data.
 		:return:
 		"""
 		return self._featurized_data

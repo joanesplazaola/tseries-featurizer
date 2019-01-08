@@ -3,19 +3,23 @@ from tools import BaseFeaturizer, get_attr_from_module
 
 class Execution:
 
-	def __init__(self, name, args, kwargs, all_data, test):
+	def __init__(self, name, args, kwargs, all_data, complete_gaps, test):
 		self.name = name
 		self.args = args
 		self.kwargs = kwargs
 		self.send_all_data = all_data
+		self.complete_gaps = complete_gaps
 		self.test = test
 
 	def __str__(self):
 		str_list = list()
-		str_list.append(",".join(map(str, self._args)))
-		str_list.append(",".join(f'{k}={v}' for k, v in self._kwargs.items()))
-		str_list = list(filter(None, str_list))
-		return f'{self.name}({", ".join(str_list)} )'
+		str_list.append("_".join(map(str, self._args)))
+		# str_list.append(",".join(f'{k}={v}' for k, v in self._kwargs.items()))
+		if self._args:
+			args = '_{}'.format("_".join(map(str, self._args)))
+		else:
+			args = ''
+		return f'{self.name}{args}'
 
 	@property
 	def args(self):
@@ -46,6 +50,16 @@ class Execution:
 		if not isinstance(send_all_data, bool):
 			raise TypeError('send_all_data must be a boolean')
 		self._send_all_data = send_all_data
+
+	@property
+	def complete_gaps(self):
+		return self._complete_gaps
+
+	@complete_gaps.setter
+	def complete_gaps(self, complete_gaps):
+		if not isinstance(complete_gaps, bool):
+			raise TypeError('complete_gaps must be a boolean')
+		self._complete_gaps = complete_gaps
 
 
 class FeatureConfig:
@@ -119,13 +133,14 @@ def get_executions(name, executions):
 		executions.append({})
 	for execution in executions:
 
-		if not set(execution.keys()) <= {'send_all_data', 'args', 'kwargs', 'test'}:
+		if not set(execution.keys()) <= {'send_all_data', 'args', 'kwargs', 'test', 'complete_gaps'}:
 			errors.append(f"Only args can be: 'send_all_data', 'args', 'kwargs', 'test':  {execution.keys()}")
 		args = execution.get('args', [])
 		kwargs = execution.get('kwargs', {})
 		all_data = execution.get('send_all_data', False)
+		complete_gaps = execution.get('complete_gaps', False)
 		test = execution.get('test', False)
-		execs.append(Execution(name, args, kwargs, all_data, test))
+		execs.append(Execution(name, args, kwargs, all_data, complete_gaps, test))
 	return execs, errors
 
 

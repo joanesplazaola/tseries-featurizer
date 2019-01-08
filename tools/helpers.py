@@ -4,6 +4,12 @@ from concurrent.futures import ProcessPoolExecutor
 
 
 def get_attr_from_module(module):
+	"""
+	Returns the attribute of a module.
+	For example, for 'numpy.max' the max function is returned.
+	:param module: string containing the dir of the function/class.
+	:return: specified class or function.
+	"""
 	if callable(module):
 		return module
 	elif not isinstance(module, str):
@@ -16,6 +22,19 @@ def get_attr_from_module(module):
 
 
 def get_possible_orders(max_range, max_sum):
+	"""
+	Calculates the possible orders with max_range that in summation give less than max_sum.
+	For example:
+
+	get_possible_orders([3, 3], 2)
+
+	Out[1]:
+		array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 0]])
+
+	:param max_range: Max range of each element of array.
+	:param max_sum: Max sum of all the elements in the order.
+	:return: array of possible orders.
+	"""
 	if max_sum <= 0:
 		raise ValueError('Max_sum must be a positive number.')
 

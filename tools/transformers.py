@@ -3,6 +3,11 @@ import pandas as pd
 
 
 def to_frequency(data):
+	"""
+	Transforms time domain data to frequency data.
+	:param data: pd.DataFrame or pd.Series in time-domain
+	:return: pd.DataFrame in frequency domain
+	"""
 	if isinstance(data, pd.Series):
 		data = data.to_frame()
 
