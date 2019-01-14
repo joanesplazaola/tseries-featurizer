@@ -69,14 +69,19 @@ class TransformerTest(unittest.TestCase):
 		expected = np.zeros(int(n / 2))
 		expected[freq] = (n * amplitude) / 2
 		signal = np.sin(freq * np.pi * np.arange(n) / float(n / 2)) * amplitude
-		signal_series = pd.Series(signal)
-		frequencies = to_frequency(signal_series)
+		data = pd.DataFrame()
+		data['signal'] = signal
+		data['time'] = data.index
+		data['time'] = pd.to_datetime(data['time'], unit='s')
+		data.set_index('time', inplace=True)
 
-		self.assertTrue(np.allclose(expected, frequencies[0].values))
+		data.index = pd.DatetimeIndex(data.index.values, freq=data.index.inferred_freq)
+		frequencies = to_frequency(data)
+
+		self.assertTrue(np.allclose(expected, frequencies['signal'].values))
 
 	def test_to_frequency_transformer_many_freqs(self):
-		import numpy as np
-		import pandas as pd
+
 		N = 500
 		freqs = [2, 10, 15]
 		amps = [10, 20, 30]
@@ -85,10 +90,17 @@ class TransformerTest(unittest.TestCase):
 		for freq, amp in zip(freqs, amps):
 			expected[freq] = (N * amp) / 2
 			signal += np.sin(freq * np.pi * np.arange(N) / float(N / 2)) * amp
-		signal_series = pd.Series(signal)
-		frequencies = to_frequency(signal_series)
 
-		self.assertTrue(np.allclose(expected, frequencies[0].values))
+		data = pd.DataFrame()
+		data['signal'] = signal
+		data['time'] = data.index
+		data['time'] = pd.to_datetime(data['time'], unit='s')
+		data.set_index('time', inplace=True)
+
+		data.index = pd.DatetimeIndex(data.index.values, freq=data.index.inferred_freq)
+		frequencies = to_frequency(data)
+
+		self.assertTrue(np.allclose(expected, frequencies['signal'].values))
 
 	def test_to_frequency_transformer_no_pandas(self):
 
