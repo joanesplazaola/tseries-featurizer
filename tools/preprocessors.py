@@ -1,15 +1,9 @@
 import pandas as pd
-import numpy as np
+from tools import get_attr_from_module
 
 
-# TODO This has to be generalized or many functions need to be done
 def item_list_from_tuple_list(data, item_index=0, unique=False, sort=True, output_type=int):
-	"""
-	Takes a pd.Series of tuples(frequency, amplitude) and returns a pd.Series of the frequencies
-	:param signals_peaks: Series of tuples(frequency, amplitude)
-	:type signals_peaks: pandas.Series
-	:return: Series of frequencies
-	"""
+
 	item_list = data.apply(lambda x: list(list(zip(*x))[item_index])).apply(pd.Series).stack()
 	if unique:
 		item_list = item_list.unique()
@@ -24,16 +18,28 @@ def get_evaluated_function(data, evaluated_field, evaluator_fn, model_field):
 	"""
 
 	:param data:
+	:param evaluated_field:
+	:param evaluator_fn:
+	:param model_field:
 	:return:
 	"""
-	# TODO This has to be tested and set correctly
+	evaluator_fn = get_attr_from_module(evaluator_fn)
 
-	selected_row = data.iloc[np.argmin(data.loc[:, data.columns.str.endswith(evaluated_field)].T.squeeze().tolist())]
+	evaluated_col = data.filter(regex=f'{evaluated_field}$')
+	best_index = evaluator_fn(evaluated_col.iloc[:, 0].tolist())  # This function must always return an index
+	selected_row = data.iloc[best_index]
 
-	return selected_row.to_frame().T.loc[:, selected_row.to_frame().T.columns.str.endswith(model_field)].iloc[0, 0]
+	selected_frame = selected_row.to_frame().T
+
+	return selected_frame.loc[:, selected_frame.columns.str.endswith(model_field)].iloc[0, 0]
 
 
 def get_list_from_columns(data):
+	"""
+	Takes the text after the underscore in each of the data columns and inserts them to a list.
+	:param data: DataFrame with columns.
+	:return: list of column parameters in str.
+	"""
 	columns = data.columns.tolist()
-	data_list = list(map(lambda x: int(x.split('_')[-1]), columns))
+	data_list = list(map(lambda x: str(x.split('_')[-1]), columns))
 	return data_list

@@ -5,11 +5,11 @@ from itertools import chain
 
 class BaseFeaturizer:
 
-	def __init__(self, data, config=None):
+	def __init__(self, config=None):
 		self._config = config
-		self._transformed_data = self.apply_previous_trans(data.copy())
+		self._transformed_data = None
 
-	def apply_previous_trans(self, data):
+	def apply_previous_trans(self, data, test, train_prev_data=None):
 		"""
 		This function transforms the original (time-domain) data into new data.
 		For example, the FrequencyFeaturizer needs first to be transformed from time to frequency domain.
@@ -23,13 +23,16 @@ class BaseFeaturizer:
 			func = get_attr_from_module(function_name)
 			args = transf_funcs[function_name].args
 			kwargs = transf_funcs[function_name].kwargs
+			if test:
+				kwargs['test'] = True
+				kwargs['train_prev_data'] = train_prev_data
 			data = func(data, *args, **kwargs)
 		return data
 
 	# TODO Ahal dan heinian hau aggr-ekin jarri biharko litzake. Holako zerbait, baina argumentuak gehituta
 	#  t_list = self._data.agg(self._config.keys(), axis=1).T
 	#
-	def featurize(self, use_dask, n_jobs=1):
+	def featurize(self, data, use_dask, n_jobs=1):
 		"""
 		This function gets the featurized data for each feature in a featurizer, calling _apply_featurization function
 		with the specified parallelization.
@@ -46,7 +49,7 @@ class BaseFeaturizer:
 		will be parallelly called with the specified configuration and n_jobs.
 
 		This returns a list of dfs with the featurized data, and finally this is concatenated to a unique df.
-
+		:param data: The data to featurize
 		:param use_dask: Specifies if the library for parallel computing is used. (Not implemented)
 		:param n_jobs: Specifies the number of cores used for the parallelization.
 		:return: The featurized data df and the previous transformations df are returned
@@ -57,16 +60,27 @@ class BaseFeaturizer:
 			for index, key in enumerate(self._config.feature_confs)
 			for execs in self._config.feature_confs[index].executions
 		]
+		self._transformed_data = self.apply_previous_trans(data.copy(), self._config.test, self._config.train_prev_data)
+
 		featurized_list = parallel_process(kwargs, self._apply_featurization, n_jobs=n_jobs, use_kwargs=True)
 
 		featurized_df = pd.concat(featurized_list, axis=1, )
 		return featurized_df, self._transformed_data
 
+	@staticmethod
+	def _featurize_all_columns(trans_data, func, args, kwargs):
+		trans_list = list()
+		for col in trans_data:
+			column = trans_data[col].dropna()
+			value = func(column, *args, **kwargs)
+			trans_list.append(value)
+
+		trans = pd.Series(trans_list)
+		return trans
+
 	def _apply_featurization(self, key, exec):
 		"""
 		Applies the featurization function to the data.
-
-		When apply is called, a column of the data is sent per call.
 
 		As sometimes data needs to be compared between columns, all_data parameter
 		is used, to know whether all the dataset needs to be sent for each call.
@@ -98,17 +112,22 @@ class BaseFeaturizer:
 		"""
 
 		func = get_attr_from_module(key)
-
-		args = tuple(exec.args)
+		args = exec.args
 		kwargs = exec.kwargs
 		if exec.send_all_data:
 			kwargs['all_data'] = self._transformed_data
-		trans = self._transformed_data.apply(func, args=args, **kwargs)
+
+		trans = self._featurize_all_columns(self._transformed_data, func, args, kwargs)
 
 		if exec.complete_gaps:
 			kwargs['test'] = True
 			kwargs['fit_model'] = set(chain.from_iterable(trans))
-			trans = self._transformed_data.apply(func, args=args, **kwargs)
+
+			#  TODO Gehixen errepikatzen dian frekuentziak hartu o ze ein
+			# from collections import Counter
+			# most_rep = Counter(list(chain.from_iterable(trans)))
+			# key_list = [tran.keys() for tran in trans]
+			trans = self._featurize_all_columns(self._transformed_data, func, args, kwargs)
 
 		df = pd.DataFrame(trans.tolist())
 

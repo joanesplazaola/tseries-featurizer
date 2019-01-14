@@ -4,40 +4,25 @@ import numpy as np
 import glob
 import tqdm
 
-data_dir = '/home/joanes/GBL/data/Turbofan/'
-threshold = .0000001
-chunk_size = 30
-files = glob.glob(data_dir + 'train*.csv')
-machine_ids = list()
 
-file_trans_df_list = list()
-for file in files:
-	total_trans_list = list()
-	machine_ids_file = list()
-
+def get_dfs_by_machine(file):
 	df_file = pd.read_csv(file)
 	gb = df_file.groupby('machine')
-	dfs = [group for _, group in gb]
-	for df in tqdm.tqdm(dfs[:3]):
-		trans_list = list()
-		machine_ids_file.append(df['machine'].iloc[0])
-		df_filtered = df
+	dfs = [group.iloc[:, 2:] for _, group in gb]
+	return dfs
 
-		for column in df_filtered.iloc[:, 2:]:
-			df_col = df_filtered[[column]]
-			splitted_col = np.array_split(df_col, df_filtered.shape[0] / chunk_size)
-			splitted_col = [chunk.reset_index(drop=True) for chunk in splitted_col]
-			splitted_df = pd.concat(splitted_col, axis=1, ignore_index=True)
-			splitted_df.dropna(how='any', inplace=True)
 
-			tseries = TimeSeriesFeaturizer()
+dfs = list()
+dfs_test = list()
+data_dir = '/home/joanes/GBL/data/Turbofan/'
+files = glob.glob(data_dir + 'train*.csv')
+files_test = glob.glob(data_dir + 'test*.csv')
+for file, file_test in zip(files, files_test):
+	dfs.extend(get_dfs_by_machine(file))
+	dfs_test.extend(get_dfs_by_machine(file_test))
 
-			transformed = tseries.featurize(splitted_df)
-			trans_list.append(transformed)
+tseries = TimeSeriesFeaturizer()
 
-		total_trans_list.append(pd.concat(trans_list, keys=df_filtered.iloc[:, 2:].columns, axis=1))
-	file_trans_df_list.append(pd.concat(total_trans_list, keys=set(machine_ids_file), axis=1))
-	machine_ids.extend(machine_ids_file)
+transformed = tseries.featurize(dfs)
 
-last_df = pd.concat(file_trans_df_list, keys=set(machine_ids))
-print(last_df)
+trans_test = tseries.test_featurization(dfs_test)

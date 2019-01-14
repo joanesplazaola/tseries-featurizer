@@ -1,4 +1,5 @@
 from tools import BaseFeaturizer, get_attr_from_module
+import copy
 
 
 class Execution:
@@ -82,11 +83,13 @@ class FeatureConfig:
 
 class FeaturizerConfig:
 
-	def __init__(self, name, class_, prev_trans, feature_confs):
+	def __init__(self, name, class_, prev_trans, feature_confs, test=False):
 		self.name = name
 		self.class_ = class_
 		self.prev_trans = prev_trans
 		self.feature_confs = feature_confs
+		self.test = test
+		self.train_prev_data = None
 
 	def get_test_features(self):
 		return sum([feature_conf.get_test_execs() for feature_conf in self.feature_confs], [])
@@ -127,6 +130,12 @@ def has_keys(keys, dict):
 
 
 def get_executions(name, executions):
+	"""
+	Converts a dictionary with executions, to a list of Execution objects.
+	:param name:
+	:param executions:
+	:return:
+	"""
 	execs = list()
 	errors = []
 	if not executions:  # Check if is empty
@@ -144,16 +153,18 @@ def get_executions(name, executions):
 	return execs, errors
 
 
-def config_dict_validation(def_conf):
+def config_dict_validation(def_conf, test=False):
 	"""
 	This function checks the validity of the configuration dictionary and fills some optional gaps
 	in order all the featurizers to have the same structure.
 	:param def_conf:
+	:param test:
 	:return:
 	"""
+	conf = copy.deepcopy(def_conf)
 	featurizer_conf_list = list()
 	errors = []
-	for key, value in def_conf.items():
+	for key, value in conf.items():
 		gen_class = featurizer_exists(value['class'])
 		cond_list = [
 			not isinstance(key, str), not isinstance(value, dict), not has_keys({'class', 'features'}, value),
@@ -186,6 +197,7 @@ def config_dict_validation(def_conf):
 			errors.extend(error)
 			feature_conf_list.append(FeatureConfig(name=feature_func, function_=next(gen_func), executions=execs))
 
-		featurizer_conf_list.append(FeaturizerConfig(key, next(gen_class), value['previous_trans'], feature_conf_list))
+		featurizer_conf_list.append(
+			FeaturizerConfig(key, next(gen_class), value['previous_trans'], feature_conf_list, test))
 
 	return featurizer_conf_list, errors

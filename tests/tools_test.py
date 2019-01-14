@@ -1,4 +1,6 @@
 import unittest
+import numpy as np
+import pandas as pd
 from tools import get_attr_from_module, get_possible_orders, parallel_process
 from tools import to_frequency
 from tools import item_list_from_tuple_list
@@ -6,7 +8,6 @@ from tools import item_list_from_tuple_list
 
 class HelpersTest(unittest.TestCase):
 	def test_get_attr_from_module_with_valid_str(self):
-		import numpy as np
 		function_name = 'numpy.mean'
 		self.assertEqual(get_attr_from_module(function_name), np.mean, )
 
@@ -16,7 +17,6 @@ class HelpersTest(unittest.TestCase):
 			get_attr_from_module(function_name)
 
 	def test_get_attr_from_module_with_function(self):
-		import numpy as np
 
 		self.assertEqual(get_attr_from_module(np.mean), np.mean, )
 
@@ -26,7 +26,6 @@ class HelpersTest(unittest.TestCase):
 			get_attr_from_module(modules)
 
 	def test_get_possible_orders_valid(self):
-		import numpy as np
 
 		expected = np.array([
 			[0, 0, 0],
@@ -63,14 +62,13 @@ class HelpersTest(unittest.TestCase):
 class TransformerTest(unittest.TestCase):
 
 	def test_to_frequency_transformer_one_freq(self):
-		import numpy as np
-		import pandas as pd
-		N = 500
+
+		n = 500
 		freq = 2
 		amplitude = 10
-		expected = np.zeros(int(N / 2))
-		expected[freq] = (N * amplitude) / 2
-		signal = np.sin(freq * np.pi * np.arange(N) / float(N / 2)) * amplitude
+		expected = np.zeros(int(n / 2))
+		expected[freq] = (n * amplitude) / 2
+		signal = np.sin(freq * np.pi * np.arange(n) / float(n / 2)) * amplitude
 		signal_series = pd.Series(signal)
 		frequencies = to_frequency(signal_series)
 
@@ -93,7 +91,6 @@ class TransformerTest(unittest.TestCase):
 		self.assertTrue(np.allclose(expected, frequencies[0].values))
 
 	def test_to_frequency_transformer_no_pandas(self):
-		import numpy as np
 
 		signal = np.arange(500)
 		with self.assertRaises(AttributeError):
@@ -103,7 +100,6 @@ class TransformerTest(unittest.TestCase):
 class PreprocessorTest(unittest.TestCase):
 
 	def test_get_frequencies_one(self):
-		import pandas as pd
 		data = [[(555, 111), (555, 111), (555, 111), (555, 111), (555, 111)], ]
 		expected = [555] * len(data[0])
 		df = pd.Series(data)

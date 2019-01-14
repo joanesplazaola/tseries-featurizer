@@ -95,9 +95,9 @@ def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, val
 		ret = {i: round(x[i], 3) for i in fit_model}
 
 		return ret
-
+	data = pd.Series(x)
 	if mph is None:
-		mph = np.percentile(x, 95)
+		mph = np.percentile(x, 99)
 	x = np.atleast_1d(x).astype('float64')
 	if x.size < 3:
 		return np.array([], dtype=int)
@@ -159,7 +159,7 @@ def detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, val
 				mph = -mph
 		_plot(x, mph, mpd, threshold, edge, valley, ax, ind)
 
-	ret = {i: round(x[i], 3) for i in ind}
+	ret = {data[data == data.iloc[i]].index[0]: round(data[i], 3) for i in ind}
 	return ret
 
 
