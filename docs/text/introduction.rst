@@ -1,12 +1,9 @@
-Introduction
+Sarrera
 ============
 
-Why do you need such a module?
+Zertarako erabili modulu hau?
 ------------------------------
-
-tsfresh is used to to extract characteristics from time series. Let's assume you recorded the ambient temperature around
-your computer over one day as the following time series:
-
+tseries-featurizerren bidez denbora segiden ezaugarriak erauzi daitezke.
 .. image:: ../images/introduction_ts_exa.png
    :scale: 70 %
    :alt: the time series
@@ -26,35 +23,30 @@ and all those features can be calculated automatically.
 Further tsfresh is compatible with pythons :mod:`pandas` and :mod:`scikit-learn` APIs, two important packages for Data
 Science endeavours in python.
 
-What to do with these features?
--------------------------------
+Zer egin daiteke ezaugarri hauekin?
+------------------------------------
 
-The extracted features can be used to describe or cluster time series based on the extracted characteristics.
-Further, they can be used to build models that perform classification/regression tasks on the time series.
-Often the features give new insights into time series and their dynamics.
+Erauzitako ezaugarriak denbora segiden deskribapen zehatzak direnez, sailkapen, erregresio, taldekatze... atazak egin
+daitezke bertatik jasotako datuekin. Sarritan datuak edota prozesua hobeto ulertzeko balio du ezaugarri erauzketak,
+hobetu nahi den prozesu baten aldagai bakoitzak zein garrantzi duen jakinda.
 
-The tsfresh package has been used successfully in projects involving
+tseries-featurizer liburutegia honako proiektuetan erabili da:
 
-    * the prediction of the life span of machines
-    * the prediction of the quality of steel billets during a continuous casting process
+    * Konpositeen sorrera prozesuaren egokitasunaren sailkapena
 
-What not to do with tsfresh?
-----------------------------
+Zertarako ez du balio ts-featurizerrek?
+---------------------------------------
 
-Currently, tsfresh is not suitable
+Gaur egun, tseries-featurizerren bidez ezin da:
 
-    * for usage with streaming data
-    * for batch processing over a distributed architecture when different time series are fragmented over different computational units
-    * to train models on the features (we do not want to reinvent the wheel, check out the python package
-      `scikit-learn <http://scikit-learn.org/stable/>`_ for example)
+    * era banatuan exekutatu hainbat konputazio unitatetan barrena (natiboki), baina hau egin daiteke modeloa partekatuz gero, eskuz
+    * modeloak entrenatu, hau modeloak eraiki aurreko pausua litzateke, era batera datuen aurre-prozesaketa, ondoren,
+`scikit-learn <http://scikit-learn.org/stable/>`_ moduko liburutegien bidez modelo eraginkorrak sortu ahal izateko.
 
-However, some of these use cases could be implemented, if you have an application in mind, open
-an issue at `<https://github.com/blue-yonder/tsfresh/issues>`_, or feel free to contact us.
 
-What else is out there?
------------------------
+Zer beste liburutegi dago honetarako?
+-------------------------------------
 
-There is a matlab package called `hctsa <https://github.com/benfulcher/hctsa>`_ which can be used to automatically
-extract features from time series.
-It is also possible to use hctsa from within python by means of the `pyopy <https://github.com/strawlab/pyopy>`_
-package.
+Matlaberako `hctsa <https://github.com/benfulcher/hctsa>`_ liburutegia aurki daiteke , eta hau pythonen erabiltzeko
+`pyopy <https://github.com/strawlab/pyopy>`_ paketearen bidez egin daiteke. Horrez gain, pythonerako
+`tsfresh <https://github.com/blue-yonder/tsfresh>`_ liburutegia erabili daiteke.
