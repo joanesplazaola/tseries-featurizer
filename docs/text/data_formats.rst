@@ -14,7 +14,7 @@ Bai sarrerako, zein irteerako objektuak :class:`pandas.DataFrame` motakoak izang
 :class:`pandas.DataFrame` bakarra izango da, erauzitako ezaugarri bakoitzarekin
 
 
-Garrantzitsua: Sarrerako datuek ezingo dute ``NaN``, ``Inf`` edota``-Inf`` baliorik izan.
+Garrantzitsua: Sarrerako datuek ezingo dute ``NaN``, ``Inf`` edota ``-Inf`` baliorik izan.
 
 
 Sarrerako formatua: DataFrame zerrenda
@@ -75,7 +75,7 @@ Not collapsed columns
 +-----------------------------------------------------+-----------------------------------------------------+
 |                     tenperatura                     |                      hezetasuna                     |
 +-----------------------------------------------------+-----------------------------------------------------+
-|          Time         | ... |       Frequency       |          Time         | ... |       Frequency       |
+|          Time         | aaa |       Frequency       |          Time         | aaa |       Frequency       |
 +-----------------------+-----+-----------------------+-----------------------+-----+-----------------------+
 | feature_1 | feature_2 | ... | feature_1 | feature_2 | feature_1 | feature_2 | ... | feature_1 | feature_2 |
 +-----------+-----------+-----+-----------+-----------+-----------+-----------+-----+-----------+-----------+
