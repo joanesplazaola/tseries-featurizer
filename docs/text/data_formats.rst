@@ -25,7 +25,7 @@ Adibidez: Imaginatu hainbat etxetako tenperatura eta hezetasuna neurtzen duten s
  neurketa hauek denboran zehar izaniko bilakaera deskribatzen dutela. Ezaugarriak tseries-featurizer liburutegia erabiliz
  erauzteko, etxe bakoitzeko denbora segidak ``DataFrame`` batean jarri beharko dira, eta denak pythoneko zerrenda batean
  bildu. Jarraian ikus daitezke zerrendako bi elementu:
-[
+
     +----+---------+-------------+------------+
     | id |   time  | tenperatura | hezetasuna |
     +----+---------+-------------+------------+
@@ -37,7 +37,7 @@ Adibidez: Imaginatu hainbat etxetako tenperatura eta hezetasuna neurtzen duten s
     +----+---------+-------------+------------+
     |  A |    t4   |  tenp(A,t4) |  hez(A,t4) |
     +----+---------+-------------+------------+
-    ,
+
     +----+---------+-------------+------------+
     | id |   time  | tenperatura | hezetasuna |
     +----+---------+-------------+------------+
@@ -47,7 +47,7 @@ Adibidez: Imaginatu hainbat etxetako tenperatura eta hezetasuna neurtzen duten s
     +----+---------+-------------+------------+
     |  B |    t3   |  tenp(B,t3) |  hez(B,t3) |
     +----+---------+-------------+------------+
-]
+
 liburutegiak `time` izena duen aldagaia identifikatuko du denbora aldagai moduan, eta hau egongo ez balitz berak jarriko
 lioke lagintze-denbora jakin bat. Horrez gain, aldakorrak ez diren aldagaiak (identifikatzailea kasu honetan) ez dira
 ezaugarri erauzketarako kontuan izango.
@@ -71,8 +71,7 @@ Collapsed columns
 
 Not collapsed columns
 ----------------------
-The resulting feature matrix for all three input options will be the same.
-It will always be a :class:`pandas.DataFrame` with the following layout
+
 +-----------------------------------------------------+-----------------------------------------------------+
 |                     tenperatura                     |                      hezetasuna                     |
 +-----------------------------------------------------+-----------------------------------------------------+
@@ -84,8 +83,3 @@ It will always be a :class:`pandas.DataFrame` with the following layout
 +-----------+-----------+-----+-----------+-----------+-----------+-----------+-----+-----------+-----------+
 |    ...    |    ...    | ... |    ...    |    ...    |    ...    |    ...    | ... |    ...    |    ...    |
 +-----------+-----------+-----+-----------+-----------+-----------+-----------+-----+-----------+-----------+
-where the x features are calculated using all x values (independently for A and B), y features using all y values
-and so on.
-
-This form of DataFrame is also the expected input format to the feature selection algorithms (e.g. the
-:func:`tsfresh.select_features` function).
