@@ -1,7 +1,5 @@
 import importlib as imp
 import numpy as np
-from concurrent.futures import ProcessPoolExecutor, as_completed
-import tqdm
 import numba as nb
 
 
@@ -61,8 +59,6 @@ def get_attr_from_module(module):
 		return module
 	elif not isinstance(module, str):
 		raise TypeError('Argument must be string.')
-	if not '.' in module:
-		print('Karapaixo')
 	module_name, func_name = module.rsplit('.', 1)
 	module = imp.import_module(module_name)
 	func = getattr(module, func_name)
@@ -70,12 +66,13 @@ def get_attr_from_module(module):
 
 
 def featurizer_exists(module):
-	from .base import BaseFeaturizer
 	"""
 	Checks if class exists
 	:param module: Class' string representation
 	:return: (boolean) if is function
 	"""
+	from .base import BaseFeaturizer
+
 	try:
 		class_ = get_attr_from_module(module)
 	except AttributeError:
@@ -116,7 +113,8 @@ class ARUtils:
 	@staticmethod
 	def get_orders_aic(order, data):
 		"""
-
+		This function creates an ARIMA model with specified orders, and fits it.
+		After training the model, the AIC and the parameters are returned.
 		:param order:
 		:param data:
 		:return:
@@ -143,7 +141,7 @@ class ARUtils:
 	@staticmethod
 	def get_best_order(data, max_coeffs):
 		"""
-
+		This function returns the order with the best AIC, taking the max_coeffs of the model into account.
 		:param data:
 		:param max_coeffs:
 		:return:
@@ -160,11 +158,18 @@ class ARUtils:
 
 	@staticmethod
 	def format_ar_column(params, title, max):
+		"""
+		This method formats the AR column for the returning Dataframe.
+		Example:
+		{'ar_params_0': 0.55, 'ar_params_1': 0.32, 'ar_params_2':0.785}
+		:param params:
+		:param title:
+		:param max:
+		:return:
+		"""
 		if params is None:
 			params = [None] * max
-
-		ret = {f'{title}_{index}': params[index] for index in range(max)}
-		return ret
+		return {f'{title}_{index}': params[index] for index in range(max)}
 
 	@staticmethod
 	def get_possible_orders(max_ranges, max_sum):
@@ -191,11 +196,3 @@ class ARUtils:
 		orders = np.stack(np.meshgrid(*range_list), -1).reshape(-1, len(max_ranges))
 		mask = np.where(np.sum(orders, axis=1) <= max_sum)
 		return orders[mask]
-
-
-if __name__ == '__main__':
-	import time
-
-	start_time = time.time()
-	ja = ARUtils.get_possible_orders([10, 10, 10], 20)
-	print("--- %s seconds ---" % (time.time() - start_time))

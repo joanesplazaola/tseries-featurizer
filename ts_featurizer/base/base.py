@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import copy
-from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 from ts_featurizer.tools import get_attr_from_module
 from ts_featurizer.config import config_validation, DefaultConfiguration
@@ -59,7 +58,6 @@ class TimeSeriesFeaturizer:
 
 	def __init__(self, config=DefaultConfiguration(), collapse_columns=True, featurize_ct_cols=True, check_na=True):
 		self._collapse_columns = collapse_columns
-
 		self._featurized_data = pd.DataFrame()
 		self._testing_data = pd.DataFrame()
 		self._prev_trans = dict()

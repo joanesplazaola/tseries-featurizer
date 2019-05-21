@@ -1,3 +1,8 @@
+"""
+All these Featurizers have not been implemented, but are put here as an example of how the new Featurizers
+can have a different functionality, overriding the BaseFeaturizer's functions.
+
+"""
 from .base import BaseFeaturizer
 
 

@@ -154,7 +154,7 @@ def config_validation(def_conf, test=False):
 	"""
 	This function checks the validity of the configuration dictionary and fills some optional gaps
 	in order all the featurizers to have the same structure.
-	:param def_conf:
+	:param def_conf: configuration dictionary
 	:param test:
 	:return:
 	"""

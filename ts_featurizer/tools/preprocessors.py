@@ -28,13 +28,17 @@ def get_evaluated_function(data, evaluated_field, evaluator_fn, model_field):
 	evaluated_col = data.filter(regex=f'{evaluated_field}$')
 	best_index = evaluator_fn(evaluated_col.iloc[:, 0].tolist())  # This function must always return an index
 	selected_row = data.iloc[best_index]
-
 	selected_frame = selected_row.to_frame().T
-
 	return selected_frame.loc[:, selected_frame.columns.str.endswith(model_field)].iloc[0, 0]
 
 
 def get_one_from_cols(data, cols):
+	"""
+	Takes a column from many.
+	:param data:
+	:param cols:
+	:return:
+	"""
 	val_list = list()
 	for col in cols:
 		evaluated_col = data.filter(regex=f'{col}$')
@@ -54,6 +58,11 @@ def get_list_from_columns(data):
 
 
 def get_most_important_freqs(data):
+	"""
+	Selects the most important frequencies, those that have been detected as peak in any of the time series.
+	:param data:
+	:return:
+	"""
 	from .features import detect_peaks
 
 	freqs = [list(detect_peaks(data[col]).keys()) for col in data]
@@ -64,6 +73,13 @@ def get_most_important_freqs(data):
 
 
 def get_AR_model(data, max_coeffs):
+	"""
+	Gets the AR model of one of the columns randomly,
+	taking into account the columns contain more or less similar data.
+	:param data:
+	:param max_coeffs:
+	:return:
+	"""
 	from random import shuffle
 	from .helpers import ARUtils
 	col_list = list(data.columns)
