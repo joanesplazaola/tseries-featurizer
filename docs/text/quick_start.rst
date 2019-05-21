@@ -14,7 +14,7 @@ TSeries-featurizer liburutegia Python Package Indexean (PyPI) aurki daitekeenez,
    pip install tseries-featurizer
 
 
-Dive in
+Nola hasi
 -------
 
 Dokumentazio osoa irakurtzen hasi aurretik, tseries-featurizer erabiltzen hasi zaitezke ondorengo adibidearen bidez:
