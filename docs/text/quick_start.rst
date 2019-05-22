@@ -15,7 +15,7 @@ TSeries-featurizer liburutegia Python Package Indexean (PyPI) aurki daitekeenez,
 
 
 Nola hasi
--------
+----------
 
 Dokumentazio osoa irakurtzen hasi aurretik, tseries-featurizer erabiltzen hasi zaitezke ondorengo adibidearen bidez:
 
@@ -69,7 +69,7 @@ Hauek lehenengo etxeko neurketak dira, denboran zehar 4 mugimendu sentsoreek jas
 Hainbat etxetako (314 kasu honetan) neurketak dauzkagunez, guztien ezaugarriak erauzi nahi izanez gero,
 lagin bakoitza zerrenda bateko elementu izatea besterik ez da egin behar.
 
-Kasu honetan emaitzak aparteko fitxategi batetik kargatu dira, eta ``y`` aldagaian gorde da 1. etxeari dagokiona.
+Kasu honetan emaitzak aparteko fitxategi batetik kargatu dira, eta ``ys`` aldagaian gorde dira.
 
 ``ys`` aldagaiak hainbat etxebizitzaren emaitzak ditu, -1 eta 1 emaitzekin, gela pasa duen edo ez adieraziz:
 
@@ -157,7 +157,7 @@ Datu hauekin, Random Forest modelo bat sortu genezake, adibidez, sklearn erabili
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.model_selection import train_test_split
     rfc = RandomForestClassifier()
-    X_train, X_test, y_train, y_test = train_test_split(features, ys[' label_class'], train_size=0.75)
+    X_train, X_test, y_train, y_test = train_test_split(features, ys[' label_class'][:100], train_size=0.75)
     rfc.fit(X_train, y_train)
     print(rfc.score(X_test, y_test))
 

@@ -6,7 +6,7 @@ Zertarako erabili modulu hau?
 tseries-featurizerren bidez denbora segiden ezaugarriak erauzi daitezke.
 .. image:: ../images/introduction_ts_exa.png
    :scale: 70 %
-   :alt: the time series
+   :alt: some characteristics of the time series
    :align: center
 
 Now you want to calculate different characteristics such as the maximal or minimal temperature, the average temperature
