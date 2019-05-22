@@ -1,10 +1,16 @@
-=======
-tsfresh
-=======
+===================
+tseries-featurizer
+===================
 
-This is the documentation of **tsfresh**.
+Hau **tseries-featurizer** liburutegiaren dokumentazioa da.
 
-tsfresh is a python package.
-It automatically calculates a large number of time series characteristics, the so called features.
-Further the package contains methods to evaluate the explaining power and importance of such characteristics for
-regression or classification tasks.
+tseries-featurizer pythoneko pakete bat da.
+Automatikoki denbora segiden ehundaka ezaugarri erauzteko gai da, era horretan datu mota horiekin
+sailkapen eta erregresio atazak erraztuz.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   Sarrera <text/introduction>
+   Quick Start <text/quick_start>
