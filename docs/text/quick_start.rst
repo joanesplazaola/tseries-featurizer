@@ -114,7 +114,7 @@ Ondorengo irudian lehenengo etxeko neurketak irudikatuko ditugu, bertan gela ald
     plt.show()
 
 .. image:: ../images/Figure_310.png
-   :scale: 75 %
+   :scale: 50 %
    :alt: 27. etxeko denbora segidak (gela aldaketarik ez)
    :align: center
 
@@ -148,7 +148,7 @@ Lortutako ezaugarrien batzuen artean, korrelazio handia egongo da, eta beraz, ir
 behar den denbora murrizteko, komenigarria da korrelazio handia duten ezaugarrietatik (2tik 1) ezabatzea, ezaugarri
 erredundanteak kenduz.
 
-Behin pausu hauek emanda, lortutako ezaugarriak `feature` gisa erabiliko dira, sailkapen modeloko `ys`arekin batera.
+Behin pausu hauek emanda, lortutako ezaugarriak `feature` gisa erabiliko dira, sailkapen modeloko `ys` arekin batera.
 Datu hauekin, Random Forest modelo bat sortu genezake, adibidez, sklearn erabiliz:
 
 
