@@ -35,8 +35,8 @@ Zertarako ez du balio ts-featurizerrek?
 Gaur egun, tseries-featurizerren bidez ezin da:
 
     * era banatuan exekutatu hainbat konputazio unitatetan barrena (natiboki), baina hau egin daiteke modeloa partekatuz gero, eskuz
-    * modeloak entrenatu, hau modeloak eraiki aurreko pausua litzateke, era batera datuen aurre-prozesaketa, ondoren,
-`scikit-learn <http://scikit-learn.org/stable/>`_ moduko liburutegien bidez modelo eraginkorrak sortu ahal izateko.
+    * modeloak entrenatu, hau modeloak eraiki aurreko pausua litzateke, era batera datuen aurre-prozesaketa, ondoren, `scikit-learn <http://scikit-learn.org/stable/>`_
+      moduko liburutegien bidez modelo eraginkorrak sortu ahal izateko.
 
 
 Zer beste liburutegi dago honetarako?
