@@ -102,7 +102,7 @@ Ondorengo irudian lehenengo etxeko neurketak irudikatuko ditugu, bertan gela ald
     plt.show()
 
 .. image:: ../images/Figure_1.png
-   :scale: 100 %
+   :scale: 75 %
    :alt: Lehenengo etxeko denbora segidak (gela aldaketa)
    :align: center
 
@@ -114,7 +114,7 @@ Ondorengo irudian lehenengo etxeko neurketak irudikatuko ditugu, bertan gela ald
     plt.show()
 
 .. image:: ../images/Figure_310.png
-   :scale: 100 %
+   :scale: 75 %
    :alt: 27. etxeko denbora segidak (gela aldaketarik ez)
    :align: center
 
