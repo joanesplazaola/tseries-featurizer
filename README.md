@@ -2,6 +2,8 @@
 
 This module helps with the time series featurization, providing many tools and a simple interface for custom tools creation.
 
+https://tseries-featurizer.readthedocs.io/
+
 - Time-Domain Featurization
 	- Mean
 	- Min / Max
